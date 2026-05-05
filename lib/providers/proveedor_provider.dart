@@ -1,42 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../models/proveedor.dart';
 
 class ProveedorProvider extends ChangeNotifier {
-  final List<Proveedor> proveedores = [
-    Proveedor(
-      id: 1,
-      nombre: 'Empresas Vidal',
-      correo: 'contacto@evidal.cl',
-      telefono: '+56 9 1234 5678',
-      direccion: 'Rancagua, Chile',
-      estado: 'Activo',
-    ),
-    Proveedor(
-      id: 2,
-      nombre: 'Distribuidora Perez',
-      correo: 'ventas@dperez.cl',
-      telefono: '+56 9 1234 5678',
-      direccion: 'Santiago, Chile',
-      estado: 'Activo',
-    ),
-  ];
+  final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  void agregarProveedor(Proveedor proveedor) {
-    proveedores.add(proveedor);
-    notifyListeners();
+  List<Proveedor> proveedores = [];
+
+  ProveedorProvider() {
+    obtenerProveedores();
   }
 
-  void editarProveedor(Proveedor proveedor) {
-    final index = proveedores.indexWhere((item) => item.id == proveedor.id);
+  void obtenerProveedores() {
+    db.collection('proveedores').snapshots().listen((snapshot) {
+      proveedores = snapshot.docs.map((doc) {
+        final data = doc.data();
 
-    if (index >= 0) {
-      proveedores[index] = proveedor;
+        return Proveedor(
+          id: doc.id,
+          nombre: data['nombre'] ?? '',
+          correo: data['correo'] ?? '',
+          telefono: data['telefono'] ?? '',
+          direccion: data['direccion'] ?? '',
+          estado: data['estado'] ?? 'Activo',
+        );
+      }).toList();
+
       notifyListeners();
-    }
+    });
   }
 
-  void eliminarProveedor(int id) {
-    proveedores.removeWhere((proveedor) => proveedor.id == id);
-    notifyListeners();
+  Future<void> agregarProveedor({
+    required String nombre,
+    required String correo,
+    required String telefono,
+    required String direccion,
+    required String estado,
+  }) async {
+    await db.collection('proveedores').add({
+      'nombre': nombre,
+      'correo': correo,
+      'telefono': telefono,
+      'direccion': direccion,
+      'estado': estado,
+    });
+  }
+
+  Future<void> editarProveedor({
+    required String docId,
+    required String nombre,
+    required String correo,
+    required String telefono,
+    required String direccion,
+    required String estado,
+  }) async {
+    await db.collection('proveedores').doc(docId).update({
+      'nombre': nombre,
+      'correo': correo,
+      'telefono': telefono,
+      'direccion': direccion,
+      'estado': estado,
+    });
+  }
+
+  Future<void> eliminarProveedor(String docId) async {
+    await db.collection('proveedores').doc(docId).delete();
   }
 }

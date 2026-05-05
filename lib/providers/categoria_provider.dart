@@ -1,45 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/categoria.dart';
 
 class CategoriaProvider extends ChangeNotifier {
-  final List<Categoria> categorias = [
-    Categoria(
-      id: 1,
-      nombre: 'Tecnología',
-      descripcion: 'Productos tecnológicos',
-      estado: 'Activo',
-    ),
-    Categoria(
-      id: 2,
-      nombre: 'Oficina',
-      descripcion: 'Artículos de oficina',
-      estado: 'Activo',
-    ),
-    Categoria(
-      id: 3,
-      nombre: 'Hogar',
-      descripcion: 'Productos para el hogar',
-      estado: 'Activo',
-    ),
-  ];
+  final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  void agregarCategoria(Categoria categoria) {
-    categorias.add(categoria);
-    notifyListeners();
+  List<Categoria> categorias = [];
+
+  CategoriaProvider() {
+    obtenerCategorias();
   }
 
-  void editarCategoria(Categoria categoria) {
-    final index = categorias.indexWhere((item) => item.id == categoria.id);
+  void obtenerCategorias() {
+    db.collection('categorias').snapshots().listen((snapshot) {
+      categorias = snapshot.docs.map((doc) {
+        final data = doc.data();
 
-    if (index >= 0) {
-      categorias[index] = categoria;
+        return Categoria(
+          id: doc.id,
+          nombre: data['nombre'] ?? '',
+          descripcion: data['descripcion'] ?? '',
+        );
+      }).toList();
+
       notifyListeners();
-    }
+    });
   }
 
-  void eliminarCategoria(int id) {
-    categorias.removeWhere((categoria) => categoria.id == id);
-    notifyListeners();
+  Future<void> agregarCategoria({
+    required String nombre,
+    required String descripcion,
+  }) async {
+    await db.collection('categorias').add({
+      'nombre': nombre,
+      'descripcion': descripcion,
+    });
+  }
+
+  Future<void> editarCategoria({
+    required String docId,
+    required String nombre,
+    required String descripcion,
+  }) async {
+    await db.collection('categorias').doc(docId).update({
+      'nombre': nombre,
+      'descripcion': descripcion,
+    });
+  }
+
+  Future<void> eliminarCategoria(String docId) async {
+    await db.collection('categorias').doc(docId).delete();
   }
 }

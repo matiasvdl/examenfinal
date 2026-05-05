@@ -13,8 +13,7 @@ class CategoriaFormularioScreen extends StatefulWidget {
       _CategoriaFormularioScreenState();
 }
 
-class _CategoriaFormularioScreenState
-    extends State<CategoriaFormularioScreen> {
+class _CategoriaFormularioScreenState extends State<CategoriaFormularioScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nombreController = TextEditingController();
@@ -54,7 +53,7 @@ class _CategoriaFormularioScreenState
       appBar: AppBarWidget(
         title: isEdit ? 'Editar categoría' : 'Agregar categoría',
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -63,42 +62,56 @@ class _CategoriaFormularioScreenState
               TextFormField(
                 controller: _nombreController,
                 decoration: const InputDecoration(labelText: 'Nombre'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Ingrese nombre' : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese nombre';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descripcionController,
-                decoration:
-                    const InputDecoration(labelText: 'Descripción'),
+                decoration: const InputDecoration(labelText: 'Descripción'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese descripción';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (!_formKey.currentState!.validate()) return;
 
-                  final nueva = Categoria(
-                    id: isEdit
-                        ? categoria!.id
-                        : DateTime.now().millisecondsSinceEpoch,
-                    nombre: _nombreController.text,
-                    descripcion: _descripcionController.text,
-                    estado: 'Activo',
-                  );
+                  final messenger = ScaffoldMessenger.of(context);
 
                   if (isEdit) {
-                    categoriaProvider.editarCategoria(nueva);
+                    await categoriaProvider.editarCategoria(
+                      docId: categoria!.id,
+                      nombre: _nombreController.text,
+                      descripcion: _descripcionController.text,
+                    );
                   } else {
-                    categoriaProvider.agregarCategoria(nueva);
+                    await categoriaProvider.agregarCategoria(
+                      nombre: _nombreController.text,
+                      descripcion: _descripcionController.text,
+                    );
                   }
 
-                  Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pop(context);
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Categoría guardada')),
-                  );
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Categoría guardada'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
                 },
-                child: Text(isEdit ? 'Guardar' : 'Agregar'),
+                child: Text(isEdit ? 'Guardar cambios' : 'Agregar categoría'),
               ),
             ],
           ),

@@ -11,7 +11,7 @@ class ProveedoresScreen extends StatelessWidget {
   void _confirmarEliminar(
     BuildContext context,
     ProveedorProvider proveedorProvider,
-    int id,
+    String id,
   ) {
     showDialog(
       context: context,
@@ -59,8 +59,25 @@ class ProveedoresScreen extends StatelessWidget {
       ),
       body: proveedores.isEmpty
           ? const Center(
-              child: Text('No hay proveedores disponibles'),
-            )
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.local_shipping,
+                  size: 60,
+                  color: Colors.grey,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'No hay proveedores disponibles',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          )
           : ListView.builder(
               padding: const EdgeInsets.only(top: 10),
               itemCount: proveedores.length,

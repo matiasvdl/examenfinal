@@ -81,8 +81,25 @@ class HomeScreen extends StatelessWidget {
           ? const Center(child: CircularProgressIndicator())
           : listado.isEmpty
               ? const Center(
-                  child: Text('No hay productos disponibles'),
-                )
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.inventory,
+                      size: 60,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'No hay productos disponibles',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              )
               : ListView.builder(
                   padding: const EdgeInsets.only(top: 10),
                   itemCount: listado.length,

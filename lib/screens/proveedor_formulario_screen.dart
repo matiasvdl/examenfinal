@@ -13,8 +13,7 @@ class ProveedorFormularioScreen extends StatefulWidget {
       _ProveedorFormularioScreenState();
 }
 
-class _ProveedorFormularioScreenState
-    extends State<ProveedorFormularioScreen> {
+class _ProveedorFormularioScreenState extends State<ProveedorFormularioScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nombreController = TextEditingController();
@@ -68,9 +67,7 @@ class _ProveedorFormularioScreenState
             children: [
               TextFormField(
                 controller: _nombreController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                ),
+                decoration: const InputDecoration(labelText: 'Nombre'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese nombre';
@@ -79,12 +76,9 @@ class _ProveedorFormularioScreenState
                 },
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: _correoController,
-                decoration: const InputDecoration(
-                  labelText: 'Correo',
-                ),
+                decoration: const InputDecoration(labelText: 'Correo'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese correo';
@@ -93,56 +87,53 @@ class _ProveedorFormularioScreenState
                 },
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: _telefonoController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono',
-                ),
+                decoration: const InputDecoration(labelText: 'Teléfono'),
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: _direccionController,
-                decoration: const InputDecoration(
-                  labelText: 'Dirección',
-                ),
+                decoration: const InputDecoration(labelText: 'Dirección'),
               ),
               const SizedBox(height: 24),
-
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (!_formKey.currentState!.validate()) return;
 
-                  final nuevoProveedor = Proveedor(
-                    id: isEdit
-                        ? proveedor!.id
-                        : DateTime.now().millisecondsSinceEpoch,
-                    nombre: _nombreController.text,
-                    correo: _correoController.text,
-                    telefono: _telefonoController.text,
-                    direccion: _direccionController.text,
-                    estado: 'Activo',
-                  );
+                  final messenger = ScaffoldMessenger.of(context);
 
                   if (isEdit) {
-                    proveedorProvider.editarProveedor(nuevoProveedor);
+                    await proveedorProvider.editarProveedor(
+                      docId: proveedor!.id,
+                      nombre: _nombreController.text,
+                      correo: _correoController.text,
+                      telefono: _telefonoController.text,
+                      direccion: _direccionController.text,
+                      estado: proveedor!.estado,
+                    );
                   } else {
-                    proveedorProvider.agregarProveedor(nuevoProveedor);
+                    await proveedorProvider.agregarProveedor(
+                      nombre: _nombreController.text,
+                      correo: _correoController.text,
+                      telefono: _telefonoController.text,
+                      direccion: _direccionController.text,
+                      estado: 'Activo',
+                    );
                   }
 
-                  Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pop(context);
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Proveedor guardado'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Proveedor guardado'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
                 },
-                child: Text(
-                  isEdit ? 'Guardar cambios' : 'Agregar proveedor',
-                ),
+                child: Text(isEdit ? 'Guardar cambios' : 'Agregar proveedor'),
               ),
             ],
           ),

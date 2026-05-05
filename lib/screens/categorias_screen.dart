@@ -11,7 +11,7 @@ class CategoriasScreen extends StatelessWidget {
   void _confirmarEliminar(
     BuildContext context,
     CategoriaProvider categoriaProvider,
-    int id,
+    String id,
   ) {
     showDialog(
       context: context,
@@ -24,13 +24,19 @@ class CategoriasScreen extends StatelessWidget {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
-              categoriaProvider.eliminarCategoria(id);
-              Navigator.pop(context);
+            onPressed: () async {
+              await categoriaProvider.eliminarCategoria(id);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Categoría eliminada')),
-              );
+              if (context.mounted) {
+                Navigator.pop(context);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Categoría eliminada'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
             },
             child: const Text('Eliminar'),
           ),
@@ -53,7 +59,26 @@ class CategoriasScreen extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
       body: categorias.isEmpty
-          ? const Center(child: Text('No hay categorías'))
+          ? const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.category,
+                  size: 60,
+                  color: Colors.grey,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'No hay categorías disponibles',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          )
           : ListView.builder(
               padding: const EdgeInsets.only(top: 10),
               itemCount: categorias.length,
