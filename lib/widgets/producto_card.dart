@@ -5,12 +5,14 @@ import 'estilo_card.dart';
 
 class ProductoCard extends StatelessWidget {
   final Producto producto;
+  final VoidCallback onVer;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const ProductoCard({
     super.key,
     required this.producto,
+    required this.onVer,
     required this.onEdit,
     required this.onDelete,
   });
@@ -19,6 +21,7 @@ class ProductoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return EstiloCard(
       child: ListTile(
+        onTap: onVer,
         leading: Image.network(
           producto.imagen,
           width: 50,

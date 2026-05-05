@@ -1,11 +1,13 @@
 export 'login_screen.dart';
+export 'registro_screen.dart';
 export 'menu_screen.dart';
 export 'home_screen.dart';
+export 'producto_detalle_screen.dart';
 export 'producto_formulario_screen.dart';
-export 'error_screen.dart';
 export 'proveedores_screen.dart';
 export 'proveedor_detalle_screen.dart';
 export 'proveedor_formulario_screen.dart';
 export 'categorias_screen.dart';
 export 'categoria_detalle_screen.dart';
 export 'categoria_formulario_screen.dart';
+export 'error_screen.dart';

@@ -81,25 +81,25 @@ class HomeScreen extends StatelessWidget {
           ? const Center(child: CircularProgressIndicator())
           : listado.isEmpty
               ? const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.inventory,
-                      size: 60,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'No hay productos disponibles',
-                      style: TextStyle(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.inventory,
+                        size: 60,
                         color: Colors.grey,
-                        fontSize: 16,
                       ),
-                    ),
-                  ],
-                ),
-              )
+                      SizedBox(height: 10),
+                      Text(
+                        'No hay productos disponibles',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               : ListView.builder(
                   padding: const EdgeInsets.only(top: 10),
                   itemCount: listado.length,
@@ -108,6 +108,13 @@ class HomeScreen extends StatelessWidget {
 
                     return ProductoCard(
                       producto: producto,
+                      onVer: () {
+                        Navigator.pushNamed(
+                          context,
+                          'producto_detalle',
+                          arguments: producto,
+                        );
+                      },
                       onEdit: () {
                         Navigator.pushNamed(
                           context,
