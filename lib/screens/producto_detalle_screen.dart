@@ -25,18 +25,19 @@ class ProductoDetalleScreen extends StatelessWidget {
                 Center(
                   child: Image.network(
                     producto.imagen,
-                    width: 160,
-                    height: 160,
+                    width: 180,
+                    height: 180,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(
                         Icons.image_not_supported,
                         size: 80,
+                        color: Colors.grey,
                       );
                     },
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 Text(
                   producto.nombre,
                   style: const TextStyle(

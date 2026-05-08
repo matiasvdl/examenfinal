@@ -24,23 +24,23 @@ class HomeScreen extends StatelessWidget {
   ) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Confirmar'),
         content: const Text('¿Eliminar este producto?'),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
             child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () async {
+              Navigator.pop(dialogContext);
+
               await productoProvider.eliminarProducto(id);
 
               if (context.mounted) {
-                Navigator.pop(context);
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Producto eliminado'),
