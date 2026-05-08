@@ -17,7 +17,6 @@ class _CategoriaFormularioScreenState extends State<CategoriaFormularioScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nombreController = TextEditingController();
-  final _descripcionController = TextEditingController();
 
   Categoria? categoria;
   bool isEdit = false;
@@ -33,14 +32,12 @@ class _CategoriaFormularioScreenState extends State<CategoriaFormularioScreen> {
       isEdit = true;
 
       _nombreController.text = categoria!.nombre;
-      _descripcionController.text = categoria!.descripcion;
     }
   }
 
   @override
   void dispose() {
     _nombreController.dispose();
-    _descripcionController.dispose();
     super.dispose();
   }
 
@@ -69,17 +66,6 @@ class _CategoriaFormularioScreenState extends State<CategoriaFormularioScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _descripcionController,
-                decoration: const InputDecoration(labelText: 'Descripción'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese descripción';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () async {
@@ -89,14 +75,13 @@ class _CategoriaFormularioScreenState extends State<CategoriaFormularioScreen> {
 
                   if (isEdit) {
                     await categoriaProvider.editarCategoria(
-                      docId: categoria!.id,
+                      id: categoria!.id,
                       nombre: _nombreController.text,
-                      descripcion: _descripcionController.text,
+                      estado: categoria!.estado,
                     );
                   } else {
                     await categoriaProvider.agregarCategoria(
                       nombre: _nombreController.text,
-                      descripcion: _descripcionController.text,
                     );
                   }
 

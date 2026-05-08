@@ -22,7 +22,7 @@ class ProveedorCard extends StatelessWidget {
     return EstiloCard(
       child: ListTile(
         leading: const Icon(Icons.local_shipping),
-        title: Text(proveedor.nombre),
+        title: Text('${proveedor.nombre} ${proveedor.apellido}'),
         subtitle: Text(proveedor.correo),
         onTap: onVer,
         trailing: Row(

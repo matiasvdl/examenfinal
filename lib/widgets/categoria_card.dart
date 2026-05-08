@@ -23,7 +23,7 @@ class CategoriaCard extends StatelessWidget {
       child: ListTile(
         leading: const Icon(Icons.category),
         title: Text(categoria.nombre),
-        subtitle: Text(categoria.descripcion),
+        subtitle: Text('Estado: ${categoria.estado}'),
         onTap: onVer,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

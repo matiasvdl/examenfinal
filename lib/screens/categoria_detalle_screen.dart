@@ -12,7 +12,9 @@ class CategoriaDetalleScreen extends StatelessWidget {
     final categoria = ModalRoute.of(context)!.settings.arguments as Categoria;
 
     return Scaffold(
-      appBar: const AppBarWidget(title: 'Detalle categoría'),
+      appBar: const AppBarWidget(
+        title: 'Detalle categoría',
+      ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: EstiloCard(
@@ -30,7 +32,7 @@ class CategoriaDetalleScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text('Descripción: ${categoria.descripcion}'),
+                Text('Estado: ${categoria.estado}'),
               ],
             ),
           ),

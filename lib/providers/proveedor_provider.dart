@@ -1,70 +1,119 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import '../models/proveedor.dart';
 
 class ProveedorProvider extends ChangeNotifier {
-  final FirebaseFirestore db = FirebaseFirestore.instance;
+  final String _baseUrl = "143.198.118.203:8100";
+  final String _user = "test";
+  final String _pass = "test2023";
 
   List<Proveedor> proveedores = [];
+  bool isLoading = true;
 
   ProveedorProvider() {
-    obtenerProveedores();
+    Future.microtask(() => obtenerProveedores());
   }
 
-  void obtenerProveedores() {
-    db.collection('proveedores').snapshots().listen((snapshot) {
-      proveedores = snapshot.docs.map((doc) {
-        final data = doc.data();
+  String get _basicAuth =>
+      'Basic ${base64Encode(utf8.encode('$_user:$_pass'))}';
 
-        return Proveedor(
-          id: doc.id,
-          nombre: data['nombre'] ?? '',
-          correo: data['correo'] ?? '',
-          telefono: data['telefono'] ?? '',
-          direccion: data['direccion'] ?? '',
-          estado: data['estado'] ?? 'Activo',
-        );
-      }).toList();
+  Future<void> obtenerProveedores() async {
+    isLoading = true;
+    notifyListeners();
 
-      notifyListeners();
-    });
+    final url = Uri.http(_baseUrl, 'ejemplos/provider_list_rest/');
+
+    final response = await http.get(
+      url,
+      headers: {'authorization': _basicAuth},
+    );
+
+    final Map<String, dynamic> data = json.decode(response.body);
+
+    final lista = data["Proveedores Listado"] ?? [];
+
+    proveedores = List<Proveedor>.from(
+      lista.map((x) => Proveedor.fromJson(x)),
+    );
+
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> agregarProveedor({
     required String nombre,
+    required String apellido,
     required String correo,
-    required String telefono,
-    required String direccion,
     required String estado,
   }) async {
-    await db.collection('proveedores').add({
-      'nombre': nombre,
-      'correo': correo,
-      'telefono': telefono,
-      'direccion': direccion,
-      'estado': estado,
+    final url = Uri.http(_baseUrl, 'ejemplos/provider_add_rest/');
+
+    final body = jsonEncode({
+      "provider_name": nombre,
+      "provider_last_name": apellido,
+      "provider_mail": correo,
+      "provider_state": estado,
     });
+
+    await http.post(
+      url,
+      headers: {
+        'authorization': _basicAuth,
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+
+    await obtenerProveedores();
   }
 
   Future<void> editarProveedor({
-    required String docId,
+    required int id,
     required String nombre,
+    required String apellido,
     required String correo,
-    required String telefono,
-    required String direccion,
     required String estado,
   }) async {
-    await db.collection('proveedores').doc(docId).update({
-      'nombre': nombre,
-      'correo': correo,
-      'telefono': telefono,
-      'direccion': direccion,
-      'estado': estado,
+    final url = Uri.http(_baseUrl, 'ejemplos/provider_edit_rest/');
+
+    final body = jsonEncode({
+      "provider_id": id,
+      "provider_name": nombre,
+      "provider_last_name": apellido,
+      "provider_mail": correo,
+      "provider_state": estado,
     });
+
+    await http.post(
+      url,
+      headers: {
+        'authorization': _basicAuth,
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+
+    await obtenerProveedores();
   }
 
-  Future<void> eliminarProveedor(String docId) async {
-    await db.collection('proveedores').doc(docId).delete();
+  Future<void> eliminarProveedor(int id) async {
+    final url = Uri.http(_baseUrl, 'ejemplos/provider_del_rest/');
+
+    final body = jsonEncode({
+      "provider_id": id,
+    });
+
+    await http.post(
+      url,
+      headers: {
+        'authorization': _basicAuth,
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+
+    await obtenerProveedores();
   }
 }

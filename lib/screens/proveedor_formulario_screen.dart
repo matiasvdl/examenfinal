@@ -17,9 +17,8 @@ class _ProveedorFormularioScreenState extends State<ProveedorFormularioScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nombreController = TextEditingController();
+  final _apellidoController = TextEditingController();
   final _correoController = TextEditingController();
-  final _telefonoController = TextEditingController();
-  final _direccionController = TextEditingController();
 
   Proveedor? proveedor;
   bool isEdit = false;
@@ -35,18 +34,16 @@ class _ProveedorFormularioScreenState extends State<ProveedorFormularioScreen> {
       isEdit = true;
 
       _nombreController.text = proveedor!.nombre;
+      _apellidoController.text = proveedor!.apellido;
       _correoController.text = proveedor!.correo;
-      _telefonoController.text = proveedor!.telefono;
-      _direccionController.text = proveedor!.direccion;
     }
   }
 
   @override
   void dispose() {
     _nombreController.dispose();
+    _apellidoController.dispose();
     _correoController.dispose();
-    _telefonoController.dispose();
-    _direccionController.dispose();
     super.dispose();
   }
 
@@ -77,6 +74,17 @@ class _ProveedorFormularioScreenState extends State<ProveedorFormularioScreen> {
               ),
               const SizedBox(height: 12),
               TextFormField(
+                controller: _apellidoController,
+                decoration: const InputDecoration(labelText: 'Apellido'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese apellido';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
                 controller: _correoController,
                 decoration: const InputDecoration(labelText: 'Correo'),
                 validator: (value) {
@@ -85,16 +93,6 @@ class _ProveedorFormularioScreenState extends State<ProveedorFormularioScreen> {
                   }
                   return null;
                 },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _telefonoController,
-                decoration: const InputDecoration(labelText: 'Teléfono'),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _direccionController,
-                decoration: const InputDecoration(labelText: 'Dirección'),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -105,19 +103,17 @@ class _ProveedorFormularioScreenState extends State<ProveedorFormularioScreen> {
 
                   if (isEdit) {
                     await proveedorProvider.editarProveedor(
-                      docId: proveedor!.id,
+                      id: proveedor!.id,
                       nombre: _nombreController.text,
+                      apellido: _apellidoController.text,
                       correo: _correoController.text,
-                      telefono: _telefonoController.text,
-                      direccion: _direccionController.text,
                       estado: proveedor!.estado,
                     );
                   } else {
                     await proveedorProvider.agregarProveedor(
                       nombre: _nombreController.text,
+                      apellido: _apellidoController.text,
                       correo: _correoController.text,
-                      telefono: _telefonoController.text,
-                      direccion: _direccionController.text,
                       estado: 'Activo',
                     );
                   }

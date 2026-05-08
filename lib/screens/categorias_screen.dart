@@ -11,25 +11,27 @@ class CategoriasScreen extends StatelessWidget {
   void _confirmarEliminar(
     BuildContext context,
     CategoriaProvider categoriaProvider,
-    String id,
+    int id,
   ) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Confirmar'),
         content: const Text('¿Eliminar esta categoría?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+            },
             child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () async {
+              Navigator.pop(dialogContext);
+
               await categoriaProvider.eliminarCategoria(id);
 
               if (context.mounted) {
-                Navigator.pop(context);
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Categoría eliminada'),
@@ -58,59 +60,61 @@ class CategoriasScreen extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
-      body: categorias.isEmpty
-          ? const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.category,
-                  size: 60,
-                  color: Colors.grey,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'No hay categorías disponibles',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
+      body: categoriaProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : categorias.isEmpty
+              ? const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.category,
+                        size: 60,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'No hay categorías disponibles',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          )
-          : ListView.builder(
-              padding: const EdgeInsets.only(top: 10),
-              itemCount: categorias.length,
-              itemBuilder: (context, index) {
-                final categoria = categorias[index];
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.only(top: 10),
+                  itemCount: categorias.length,
+                  itemBuilder: (context, index) {
+                    final categoria = categorias[index];
 
-                return CategoriaCard(
-                  categoria: categoria,
-                  onVer: () {
-                    Navigator.pushNamed(
-                      context,
-                      'categoria_detalle',
-                      arguments: categoria,
+                    return CategoriaCard(
+                      categoria: categoria,
+                      onVer: () {
+                        Navigator.pushNamed(
+                          context,
+                          'categoria_detalle',
+                          arguments: categoria,
+                        );
+                      },
+                      onEditar: () {
+                        Navigator.pushNamed(
+                          context,
+                          'categoria_formulario',
+                          arguments: categoria,
+                        );
+                      },
+                      onEliminar: () {
+                        _confirmarEliminar(
+                          context,
+                          categoriaProvider,
+                          categoria.id,
+                        );
+                      },
                     );
                   },
-                  onEditar: () {
-                    Navigator.pushNamed(
-                      context,
-                      'categoria_formulario',
-                      arguments: categoria,
-                    );
-                  },
-                  onEliminar: () {
-                    _confirmarEliminar(
-                      context,
-                      categoriaProvider,
-                      categoria.id,
-                    );
-                  },
-                );
-              },
-            ),
+                ),
     );
   }
 }
